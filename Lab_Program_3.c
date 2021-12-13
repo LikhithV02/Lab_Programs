@@ -1,136 +1,154 @@
-#include <stdlib.h>
+/*stack function implementation */
+
 #include <stdio.h>
-#include <string.h>
-#define max_size 5
-int stack[max_size], top = -1;
-void push();
-void pop();
-void display();
-void pali();
-int main()
-{
-    int choice;
-    while (choice)
-    {
-        printf("\n\n--------STACK OPERATIONS-----------\n");
-        printf("1.Push\n");
-        printf("2.Pop\n");
-        printf("3.Palindrome\n");
-        printf("4.Display\n");
-        printf("5.Exit\n");
-        printf("-----------------------");
-        printf("\nEnter your choice:\t");
-        scanf("%d", &choice);
-        switch (choice)
-        {
-        case 1:
-            push();
-            break;
-        case 2:
-            pop();
-            break;
-        case 3:
-            pali();
-            break;
-        case 4:
-            display();
-            break;
-        case 5:
-            exit(0);
-            break;
-        default:
-            printf("\nInvalid choice:\n");
-            break;
-        }
+#include <stdlib.h>
+#include <limits.h>
+#include <stdbool.h>
+#define STACK_SIZE 5
+
+#define CHOICE_PUSH  1
+#define CHOICE_POP 2
+#define CHOICE_PALINDROME  3
+#define CHOICE_  4
+#define CHOICE_EXIT    0
+
+unsigned int menu() {
+  unsigned int choice = CHOICE_DELETE + 1;
+  while (choice > CHOICE_DELETE) {
+    printf("Enter your choice:\n");
+    printf("\t %u - Create Array\n", CHOICE_CREATE);
+    printf("\t %u - Display Array Elements\n", CHOICE_DISPLAY);
+    printf("\t %u - Insert Element at a Position\n", CHOICE_INSERT);
+    printf("\t %u - Delete an Element at a Position\n", CHOICE_DELETE);
+    printf("\t %u - Exit\n", CHOICE_EXIT);
+    printf("\t choice: ");
+    scanf("%d", &choice);
+    if (choice > CHOICE_DELETE) {
+      printf("ERROR: Invalid Choice\n");
     }
-    return 0;
-}
-void push() //Inserting element into the stack
-{
-    int item, n;
-    if (top == (max_size - 1))
+  }
+  return choice;
+
+typedef struct {
+        size_t size;
+        int top;
+        int* arr;
+        }stack_t;
+
+  stack_t*  create(size_t size)
+  {
+    stack_t* stack = malloc(sizeof(stack_t));
+    if (stack != NULL)
     {
-        printf("\nStack Overflow:");
-    }
-    else
+      stack->size = size;
+      stack->arr = calloc(size , sizeof(int));
+      if (stack->arr != NULL)
+      {
+        stack->top = -1; // stack is empty
+      }
+      else
+      {
+        free(stack);
+	stack = NULL;
+      }
+    }  return stack;
+  }
+
+  bool  isfull(stack_t* s)
+  {
+    if (s->top == s->size)
     {
-        printf("Enter the element to be inserted:\t");
-        scanf("%d", &item);
-        top = top + 1;
-        stack[top] = item;
-    }
-}
-void pop() //deleting an element from the stack
-{
-    int item;
-    if (top == -1)
-    {
-        printf("Stack Underflow:");
+       return true;
     }
     else
     {
-        item = stack[top];
-        top = top - 1;
-        printf("\nThe poped element: %d\t", item);
+       return false;
     }
-}
-void pali()
+  }
+
+
+  int  isempty(stack_t* s)
+  {
+     if (s->top == -1)
+     {
+        return true;
+     }
+     else
+     {
+        return false;
+     }
+  }
+
+
+
+
+  int  push(stack_t* s, int elem)
+  {
+    if (isfull(s))    // is stack full?
+    {
+       return 0;
+    }
+    s->arr[++s->top]=elem;
+    return 1;
+  }
+
+
+  int  pop(stack_t* s)
+  {
+    if (isempty(s))  // is stack empty
+    {
+      return 0;
+    }
+    return (s->arr[s->top--]);
+  }
+
+
+  bool is_palindrome(stack_t* s1 , int* arr , unsigned int mid)
+  {
+    while(s1->top>=0)
+    {
+      if(pop(s1)!=arr[mid])
+        return 0;
+      else
+         mid++;
+    }
+    return 1;
+  }
+
+void main()
 {
-    int digit, j, k, len = top + 1, flag = 0, ind = 0, length = 0;
-    int num[len], rev[len], i = 0;
-    while (top != -1)
-    {
-        digit = stack[top];
-        num[i] = digit;
-        top--;
-        i++;
-    }
-    for (j = 0; j < len; j++)
-    {
-        printf("Numbers= %d\n", num[j]);
-    }
-    printf("reverse operation : \n");
-    for (k = len - 1; k >= 0; k--)
-    {
-        rev[k] = num[ind];
-        ind++;
-    }
-    printf("reverse array : ");
-    for (k = 0; k < len; k++)
-    {
-        printf("%d\n", rev[k]);
-    }
-    printf("check for palindrome :\n");
-    for (i = 0; i < len; i++)
-    {
-        if (num[i] == rev[i])
-        {
-            length = length + 1;
-        }
-    }
-    if (length == len)
-    {
-        printf("It is palindrome number\n");
-    }
-    else
-    {
-        printf("It is not a palindrome number\n");
-    }
-    top = len - 1;
-}
-void display()
-{
-    int i;
-    if (top == -1)
-    {
-        printf("\nStack is Empty:");
-    }
-    else
-    {
-        printf("\nThe stack elements are:\n");
-        for (i = top; i >= 0; i--)
-        {
-            printf("%d\n", stack[i]);
-        }
-    }
+  stack_t* s1;         			//structure declaration 
+  unsigned int N,mid;  			//'N' is the maximum number of entries 
+  bool result;        			//a variable to store the result 
+
+  // taking the input of maximum number of entries from user
+  printf("Please enter the  number of digits::");
+  scanf("%d",&N);
+
+  mid=N/2;
+  int arr[N];          			// an array to store the sequence of numbers
+
+  // taking a  series of  numbers as input
+  printf("Please enter a sequence of single digit  number::\n");
+  for(unsigned int i=0;i<N;i++)
+    scanf("%d",&arr[i]);
+
+  s1=create(N/2);     			//to create a stucture which has the stack to store only the half series
+
+  for(unsigned int i=0;i<mid;i++)	// this pushes the only first half of series of numbers into the stack
+    push(s1 ,arr[i]);
+
+  if(N%2==0)
+     result = is_palindrome(s1 , arr , mid);
+  else
+  {					// condition to check wheather  maximum number of entries is odd or even
+     mid++;
+     result = is_palindrome(s1 , arr , mid);
+  }
+
+  if(result==1)
+   printf("The entered sequense of numbers is palindrome!!\n");
+  else
+   printf("The entered sequense of numbers is not palindrome!!\n");
+   free(s1);
 }
