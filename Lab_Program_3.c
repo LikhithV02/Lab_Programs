@@ -1,119 +1,272 @@
-#include<stdlib.h>
-#include<stdio.h> 
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <string.h>
 
-#define max_size 5 
+#define CHOICE_CREATE 1
+#define CHOICE_DISPLAY 2
+#define CHOICE_PUSH 3
+#define CHOICE_POP 4
+#define CHOICE_PALINDROME 5
+#define CHOICE_EXIT 6
+#define ERROR INT_MIN
+#define SUCCESS 0
 
-int stack[max_size],top = -1; 
-void push(); 
-void pop(); 
-void display(); 
-void pali(); 
-int main(){ 
-    int choice; 
-    while(choice){ 
-        printf("\nSTACK OPERATIONS\n");
-        printf("1.Push\n");
-        printf("2.Pop\n");
-        printf("3.Palindrome\n");
-        printf("4.Display\n");
-        printf("5.Exit\n");
-        printf("\nEnter your choice:\t"); 
-        scanf("%d",&choice); 
-        switch(choice){ 
-            case 1: 
-                push(); 
-                break; 
-            case 2: 
-                pop(); 
-                break; 
-            case 3: 
-                pali(); 
-                break; 
-            case 4: 
-                display(); 
-                break; 
-            case 5: 
-                exit(0); 
-                break; 
-            default: 
-                printf("\nInvalid choice:\n"); 
-                break; 
-        } 
-    } 
-    return 0; 
-} 
-//Inserting element into the stack
-void push(){ 
-    int item,n; 
-    if(top==(max_size-1)){ 
-        printf("\nStack Overflow:");
-    } 
-    else{ 
-        printf("Enter the element to be inserted:\t"); 
-        scanf("%d",&item); 
-        top=top+1; 
-        stack[top]=item; 
-    } 
-}
-//deleting an element from the stack
-void pop(){ 
-    int item; 
-    if(top==-1){ 
-        printf("Stack Underflow:");
-    } 
-    else{ 
-        item=stack[top]; 
-        top=top-1; 
-        printf("\nThe poped element: %d\t",item); 
-    } 
+unsigned int menu()
+{
+    unsigned int choice = CHOICE_EXIT + 1;
+    while (choice > CHOICE_EXIT)
+    {
+        printf("\nEnter your choice:\n");
+        printf("\t %u - Create Stack\n", CHOICE_CREATE);
+        printf("\t %u - Display Stack Elements\n", CHOICE_DISPLAY);
+        printf("\t %u - Push an element onto Stack\n", CHOICE_PUSH);
+        printf("\t %u - Pop an element from the Stack\n", CHOICE_POP);
+        printf("\t %u - Check whether palindrome\n", CHOICE_PALINDROME);
+        printf("\t %u - Exit\n", CHOICE_EXIT);
+        printf("\t choice: ");
+        scanf("%d", &choice);
+        if (choice > CHOICE_EXIT)
+        {
+            printf("ERROR: Invalid Choice\n");
+        }
+    }
+    return choice;
 }
 
-void pali(){ 
-    int digit,j,k,len=top+1,flag=0,ind=0 ,length = 0; 
-    int num[len],rev[len],i=0; 
-    while(top!=-1){ 
-        digit= stack[top]; 
-        num[i]=digit; 
-        top--; 
-        i++; 
-    } 
-    for(j=0;j<len;j++){ 
-    printf("Numbers= %d\n",num[j]); 
-    } 
-    printf("reverse operation : \n"); 
-    for(k=len-1;k>=0;k--){ 
-    rev[k]=num[ind]; 
-    ind++; 
-    } 
-    printf("reverse array : ");
-    for(k=0;k<len;k++){ 
-    printf("%d\n",rev[k]); 
-    } 
-    printf("check for palindrome :\n");
-    for(i=0;i<len;i++){ 
-        if(num[i]==rev[i]){ 
-            length = length+1; 
-        } 
-    }  
-    if(length==len){ 
-        printf("It is palindrome number\n");
-    } 
-    else{ 
-        printf("It is not a palindrome number\n");
-    } 
-    top = len-1;
+typedef struct
+{
+    size_t capacity;
+    int top;
+    int *elem;
+} stack_t;
+
+stack_t *create(size_t capacity);
+int push(stack_t *s, int elem);
+int pop(stack_t *s);
+bool isempty(stack_t *s);
+bool isfull(stack_t *s);
+int palindrome(char *string);
+int fn_exit(stack_t *s);
+
+stack_t *create(size_t capacity)
+{
+    stack_t *stack = malloc(sizeof(stack_t));
+    if (stack != NULL)
+    {
+        stack->capacity = capacity;
+        stack->elem = (int *)calloc(capacity, sizeof(int));
+        if (stack->elem != NULL)
+        {
+            stack->top = -1;
+        }
+        else
+        {
+            stack = NULL;
+        }
+    }
+    return stack;
 }
 
-void display(){ 
-    int i; 
-    if(top==-1){ 
-    printf("\nStack is Empty:");
-    } 
-    else{ 
-    printf("\nThe stack elements are:\n" );
-        for(i=top;i>=0;i--){ 
-            printf("%d\n",stack[i]); 
-        }  
-    } 
+void display(stack_t *s)
+{
+    if (isempty(s))
+    {
+        printf("\n\t Stack is empty\n");
+    }
+    else
+    {
+        printf("\n");
+        printf("\t");
+        for (size_t i = 0; i <= s->top; i++)
+        {
+            printf(" %d ", s->elem[i]);
+        }
+        printf("\n");
+    }
+}
+
+bool isfull(stack_t *s)
+{
+    if (s->top == s->capacity - 1)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+int push(stack_t *s, int elem)
+{
+    s->elem[++s->top] = elem;
+    return SUCCESS;
+}
+
+bool isempty(stack_t *s)
+{
+    if (s->top == -1)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+int pop(stack_t *s)
+{
+    if (isempty(s))
+    {
+        printf("\n\t Stack underflow\n");
+        return ERROR;
+    }
+    return s->elem[s->top--];
+}
+
+int palindrome(char *string)
+{
+    int length;
+    int pop_p;
+    stack_t *stack_p = NULL;
+    length = strlen(string);
+    if (length != 0)
+    {
+        stack_p = create(length);
+        for (int i = 0; i < length; i++)
+        {
+            push(stack_p, string[i]);
+        }
+        for (int i = 0; i < length; i++)
+        {
+            pop_p = pop(stack_p);
+            if (pop_p != string[i])
+            {
+                return 0;
+            }
+            return 1;
+        }
+    }
+    free(stack_p);
+    free(stack_p->elem);
+}
+
+int fn_exit(stack_t *s)
+{
+    if (s != NULL)
+    {
+        free(s);
+        free(s->elem);
+        return SUCCESS;
+    }
+    return ERROR;
+}
+
+int main()
+{
+    size_t capacity;
+    stack_t *stack = NULL;
+    int status;
+    int elem;
+    char string[100];
+    size_t choice;
+    while (true)
+    {
+        choice = menu();
+        switch (choice)
+        {
+        case CHOICE_CREATE:
+            if (stack != NULL)
+            {
+                printf("\n\t Stack already exists\n");
+            }
+            else
+            {
+                printf("\n\t Enter stack size : ");
+                scanf("%zu", &capacity);
+                stack = create(capacity);
+            }
+            break;
+        case CHOICE_DISPLAY:
+            if (stack == NULL)
+            {
+                printf("\n\t Create a stack.\n");
+                continue;
+            }
+            else
+            {
+                display(stack);
+            }
+            break;
+        case CHOICE_PUSH:
+            if (stack == NULL)
+            {
+                printf("\n\t Create a stack.\n");
+                continue;
+            }
+            else
+            {
+                if (isfull(stack))
+                {
+                    printf("\n\t Stack overflow\n");
+                }
+                else
+                {
+                    printf("\n\t Enter the element to be pushed onto the stack : ");
+                    scanf("%d", &elem);
+                    status = push(stack, elem);
+                    if (status == SUCCESS)
+                    {
+                        printf("\t %d has been pushed onto the stack\n", elem);
+                    }
+                }
+            }
+            break;
+        case CHOICE_POP:
+            if (stack == NULL)
+            {
+                printf("\n\t Create a stack.");
+                continue;
+            }
+            else
+            {
+                status = pop(stack);
+                if (status != ERROR)
+                {
+                    printf("\n\t %d has been popped from the stack\n", status);
+                }
+            }
+            break;
+        case CHOICE_PALINDROME:
+            printf("\n\t Enter a string of characters : ");
+            scanf("%s", string);
+            status = palindrome(string);
+            if (status == 1)
+            {
+                printf("\n\t It is a palindrome.\n");
+            }
+            else
+            {
+                printf("\n\t It is not a palindrome.\n");
+            }
+            break;
+        case CHOICE_EXIT:
+            if (stack != NULL)
+            {
+                status = fn_exit(stack);
+                if (status == SUCCESS)
+                {
+                    printf("\n\t Memory has been released\n");
+                }
+            }
+        default:
+            fn_exit(stack);
+            stack = NULL;
+            exit(0);
+            break;
+        }
+    }
 }
