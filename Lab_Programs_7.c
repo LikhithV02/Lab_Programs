@@ -1,172 +1,350 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 
-int count = 0;
+#define CHOICE_INSERT_AT_FRONT 1
+#define CHOICE_DELETE_AT_FRONT 2
+#define CHOICE_INSERT_AT_END 3
+#define CHOICE_DELETE_AT_END 4
+#define CHOICE_DISPLAY 5
+#define CHOICE_STACK_DEMO 6
+#define CHOICE_EXIT 7
 
-struct node
-{
-  int sem, phno;
-  char name[20], branch[10], usn[20];
-  struct node *next;
-} *first = NULL, *last = NULL, *temp = NULL, *temp1;
+/**
+ * This program implements a menu driven task to perform
+ * operations such as insert node at front, delete node at front,
+ * insert node at end, delete node at end, display linked list
+ * elements and stack demonstration on singly linked list (SLL)
+ * of Student Data with the fields : Name, USN, Branch, Sem, Phone number.
+ **/
 
-void create()
+unsigned int menu()
 {
-  int sem, phno;
-  char name[20], branch[10], usn[20];
-  temp = (struct node *)malloc(sizeof(struct node));
-  printf("\n Enter usn,name, branch, sem, phno of student : ");
-  scanf("%s %s %s %d %d", usn, name, branch, &sem, &phno);
-  strcpy(temp->usn, usn);
-  strcpy(temp->name, name);
-  strcpy(temp->branch, branch);
-  temp->sem = sem;
-  temp->phno = phno;
-  temp->next = NULL;
-  count++;
+  unsigned int choice = CHOICE_EXIT + 1;
+  while (choice > CHOICE_EXIT)
+  {
+    printf("\nEnter your choice:\n");
+    printf("\t %u - Insert at the beginning of the list\n", CHOICE_INSERT_AT_FRONT);
+    printf("\t %u - Delete at the beginning of the list\n", CHOICE_DELETE_AT_FRONT);
+    printf("\t %u - Insert at the end of the list\n", CHOICE_INSERT_AT_END);
+    printf("\t %u - Delete at the end of the list\n", CHOICE_DELETE_AT_END);
+    printf("\t %u - Display list Elements\n", CHOICE_DISPLAY);
+    printf("\t %u - Stack demonstration of SLL\n", CHOICE_STACK_DEMO);
+    printf("\t %u - Exit\n", CHOICE_EXIT);
+    printf("\t choice: ");
+    scanf("%d", &choice);
+    if (choice > CHOICE_EXIT)
+    {
+      printf("ERROR: Invalid Choice\n");
+    }
+  }
+  return choice;
 }
 
-void insert_atfirst()
+/**
+ * Initialising the struct
+ **/
+
+typedef struct listnode
 {
-  if (first == NULL)
+  char name[50];
+  char branch[10];
+  char USN[10];
+  char phno[10];
+  int sem;
+  struct listnode *link;
+} listnode_t;
+
+listnode_t *create();
+listnode_t *insert_at_front(listnode_t *list);
+listnode_t *delete_at_front(listnode_t *list);
+listnode_t *insert_at_end(listnode_t *list);
+listnode_t *delete_at_end(listnode_t *list);
+void display(listnode_t *list);
+void fn_exit(listnode_t *list);
+void stack_demo();
+
+/**
+ * Function to create a node
+ **/
+
+listnode_t *create()
+{
+  char name[50];
+  char branch[10];
+  char USN[10];
+  char phno[10];
+  int sem;
+
+  listnode_t *node = (listnode_t *)malloc(sizeof(listnode_t));
+
+  printf("\t Student name : ");
+  scanf("%s", name);
+  strncpy(node->name, name, 50);
+
+  printf("\t Student USN : ");
+  scanf("%s", USN);
+  strncpy(node->USN, USN, 10);
+
+  printf("\t Student branch : ");
+  scanf("%s", branch);
+  strncpy(node->branch, branch, 10);
+
+  printf("\t Student sem : ");
+  scanf("%d", &sem);
+  node->sem = sem;
+
+  printf("\t Student phone number : ");
+  scanf("%s", phno);
+  strncpy(node->phno, phno, 10);
+
+  node->link = NULL;
+
+  return node;
+}
+
+/**
+ * Function to insert a node at the front of the list
+ **/
+
+listnode_t *insert_at_front(listnode_t *list)
+{
+  listnode_t *temp = NULL;
+
+  if (list == NULL)
   {
-    create();
-    first = temp;
-    last = first;
+    list = create();
+    return list;
   }
   else
   {
-    create();
-    temp->next = first;
-    first = temp;
+    temp = create();
+    temp->link = list;
+    list = temp;
+    return list;
   }
 }
 
-void insert_atlast()
+/**
+ * Function to delete a node at the front of the list
+ **/
+
+listnode_t *delete_at_front(listnode_t *list)
 {
-  if (first == NULL)
+  listnode_t *temp = NULL;
+
+  if (list == NULL)
   {
-    create();
-    first = temp;
-    last = first;
+    printf("List is empty\n");
+    return NULL;
   }
   else
   {
-    create();
-    last->next = temp;
-    last = temp;
+    if (list->link == NULL)
+    {
+      printf("\n\t %s's data has been deleted", list->name);
+      free(list);
+      return NULL;
+    }
+    else
+    {
+      temp = list;
+      list = list->link;
+      printf("\n\t %s's data has been deleted", temp->name);
+      free(temp);
+      return list;
+    }
   }
 }
 
-void display()
-{
-  temp1 = first;
-  if (temp1 == NULL)
-  {
-    printf("List empty to display \n");
-    return;
-  }
-  printf("\n Linked list elements from begining : \n");
-  while (temp1 != NULL)
-  {
-    printf("%s %s %s %d %d\n", temp1->usn, temp1->name, temp1->branch,
-           temp1->sem, temp1->phno);
-    temp1 = temp1->next;
-  }
-  printf(" No of students = %d ", count);
-}
+/**
+ * Function to insert a node at the end of the list
+ **/
 
-int deleteend()
+listnode_t *insert_at_end(listnode_t *list)
 {
-  struct node *temp;
-  temp = first;
-  if (temp->next == NULL)
+  listnode_t *temp = NULL;
+  listnode_t *last = NULL;
+
+  if (list == NULL)
   {
-    free(temp);
-    first = NULL;
+    list = create();
+    return list;
   }
   else
   {
-    while (temp->next != last)
-      temp = temp->next;
-    printf("%s %s %s %d %d\n", last->usn, last->name, last->branch, last->sem,
-           last->phno);
-    free(last);
-    temp->next = NULL;
-    last = temp;
+    temp = create();
+    last = list;
+    while (last->link != NULL)
+    {
+      last = last->link;
+    }
+    last->link = temp;
+    return list;
   }
-  count--;
-  return 0;
 }
 
-int deletefront()
+/**
+ * Function to delete a node at the end of the list
+ **/
+
+listnode_t *delete_at_end(listnode_t *list)
 {
-  struct node *temp;
-  temp = first;
-  if (temp->next == NULL)
+  listnode_t *temp = NULL;
+  listnode_t *last = NULL;
+
+  if (list == NULL)
   {
-    free(temp);
-    first = NULL;
-    return 0;
+    printf("List is empty\n");
+    return NULL;
   }
   else
   {
-    first = temp->next;
-    printf("%s %s %s %d %d", temp->usn, temp->name, temp->branch, temp->sem,
-           temp->phno);
-    free(temp);
+    if (list->link == NULL)
+    {
+      printf("\n\t %s's data has been deleted", list->name);
+      free(list);
+      return NULL;
+    }
+    else
+    {
+      temp = list;
+      while (temp->link != NULL)
+      {
+        last = temp;
+        temp = temp->link;
+      }
+      printf("\n\t %s's data has been deleted", temp->name);
+      free(temp);
+      last->link = NULL;
+      return list;
+    }
   }
-  count--;
-  return 0;
+}
+
+/**
+ * Function to show stack demonstration of SLL
+ **/
+
+void stack_demo()
+{
+  size_t choice;
+  listnode_t *stack = NULL;
+
+  while (true)
+  {
+    printf("\n Stack demo of SLL \n");
+    printf("\t 1 - Push an element onto Stack\n");
+    printf("\t 2 - Pop an element from Stack\n");
+    printf("\t 3 - Display stack elements\n");
+    printf("\t 4 - Exit\n");
+    printf("\t choice : ");
+    scanf("%zu", &choice);
+    if (choice > 4)
+    {
+      printf("ERROR: Invalid Choice\n");
+    }
+
+    switch (choice)
+    {
+    case 1:
+      stack = insert_at_front(stack);
+      break;
+    case 2:
+      stack = delete_at_front(stack);
+      break;
+    case 3:
+      display(stack);
+      break;
+    case 4:
+      fn_exit(stack);
+      return;
+    default:
+      return;
+    }
+  }
+}
+
+/**
+ * Function to display nodes of singly linked list
+ **/
+
+void display(listnode_t *list)
+{
+  listnode_t *temp = list;
+  int count = 0;
+
+  if (temp == NULL)
+  {
+    printf("List is empty\n");
+  }
+  else
+  {
+    while (temp != NULL)
+    {
+      printf("\n\t Student name : %s", temp->name);
+      printf("\n\t Student USN : %s", temp->USN);
+      printf("\n\t Student branch : %s", temp->branch);
+      printf("\n\t Student sem : %d", temp->sem);
+      printf("\n\t Student phone number : %s\n", temp->phno);
+      temp = temp->link;
+      count++;
+    }
+    printf("\n\t Number of students = %d ", count);
+  }
+}
+
+/**
+ * Function to free memory allocated to SLL
+ **/
+
+void fn_exit(listnode_t *list)
+{
+  if (list != NULL)
+  {
+    free(list);
+    printf("Memory allocated to the list has been released\n");
+  }
 }
 
 int main()
 {
-  int ch, n, i;
-  first = NULL;
-  temp = temp1 = NULL;
-  printf("-----------------MENU----------------------\n");
-  printf("\n 1- create a SLL of n emp");
-  printf("\n 2 - Display from beginning");
-  printf("\n 3 - Insert at end");
-  printf("\n 4 - delete at end");
-  printf("\n 5 - Insert at beg");
-  printf("\n 6 - delete at beg");
-  printf("\n 7 - exit\n");
-  printf("-------------------------------------------\n");
-  while (1)
+  size_t choice;
+  listnode_t *list = NULL;
+
+  while (true)
   {
-    printf("\n Enter choice : ");
-    scanf("%d", &ch);
-    switch (ch)
+    choice = menu();
+    switch (choice)
     {
-    case 1:
-      printf("\n Enter no of students : ");
-      scanf("%d", &n);
-      for (i = 0; i < n; i++)
-        insert_atfirst();
+    case CHOICE_INSERT_AT_FRONT:
+      list = insert_at_front(list);
       break;
-    case 2:
-      display();
+    case CHOICE_DELETE_AT_FRONT:
+      list = delete_at_front(list);
       break;
-    case 3:
-      insert_atlast();
+    case CHOICE_INSERT_AT_END:
+      list = insert_at_end(list);
       break;
-    case 4:
-      deleteend();
+    case CHOICE_DELETE_AT_END:
+      list = delete_at_end(list);
       break;
-    case 5:
-      insert_atfirst();
+    case CHOICE_DISPLAY:
+      display(list);
       break;
-    case 6:
-      deletefront();
+    case CHOICE_STACK_DEMO:
+      stack_demo();
       break;
-    case 7:
+    case CHOICE_EXIT:
+      fn_exit(list);
       exit(0);
+      break;
     default:
-      printf("wrong choice\n");
+      fn_exit(list);
+      list = NULL;
+      exit(0);
+      break;
     }
   }
-  return 0;
 }
