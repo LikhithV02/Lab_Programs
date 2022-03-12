@@ -12,7 +12,11 @@
 #define CHOICE_EXIT 6
 #define ERROR INT_MIN
 #define SUCCESS 0
-
+/**
+ * This program implements a menu driven task to perform
+ * operations such as push, pop, demonstrate overflow and underflow
+ * and check for palindrome on STACK.
+ **/
 unsigned int menu()
 {
     unsigned int choice = CHOICE_EXIT + 1;
@@ -35,6 +39,8 @@ unsigned int menu()
     return choice;
 }
 
+// Initialising the struct
+
 typedef struct
 {
     size_t capacity;
@@ -50,6 +56,7 @@ bool isfull(stack_t *s);
 int palindrome(char *string);
 int fn_exit(stack_t *s);
 
+// Function to create a STACK
 stack_t *create(size_t capacity)
 {
     stack_t *stack = malloc(sizeof(stack_t));
@@ -69,6 +76,7 @@ stack_t *create(size_t capacity)
     return stack;
 }
 
+// Function to display elements present in the STACK
 void display(stack_t *s)
 {
     if (isempty(s))
@@ -87,6 +95,7 @@ void display(stack_t *s)
     }
 }
 
+// Function to check if STACK is full
 bool isfull(stack_t *s)
 {
     if (s->top == s->capacity - 1)
@@ -99,12 +108,14 @@ bool isfull(stack_t *s)
     }
 }
 
+// Function to push a element on to the STACK
 int push(stack_t *s, int elem)
 {
     s->elem[++s->top] = elem;
     return SUCCESS;
 }
 
+// Function to check if STACK is empty
 bool isempty(stack_t *s)
 {
     if (s->top == -1)
@@ -117,6 +128,7 @@ bool isempty(stack_t *s)
     }
 }
 
+// Function to pop a element on to the STACK
 int pop(stack_t *s)
 {
     if (isempty(s))
@@ -127,6 +139,7 @@ int pop(stack_t *s)
     return s->elem[s->top--];
 }
 
+// Function to check for palindrome
 int palindrome(char *string)
 {
     int length;
@@ -154,6 +167,7 @@ int palindrome(char *string)
     free(stack_p->elem);
 }
 
+// Function to free memory allocated to STACK
 int fn_exit(stack_t *s)
 {
     if (s != NULL)
