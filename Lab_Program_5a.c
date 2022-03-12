@@ -9,7 +9,7 @@ int stack[MAX];
 char post[MAX];
 int top = -1;
 
-/*fUNCTION PROTOYPE */
+/*FUNCTION PROTOYPE */
 void pushstack(int tmp);
 void calculator(char c);
 void main()
