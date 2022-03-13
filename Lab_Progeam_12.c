@@ -42,25 +42,6 @@ int linear_probe(int curr)
     return -1;
 }
 //-------------------------------------------------------
-int quadratic_probe(int curr)
-{
-    int temp = curr = 1;
-    // check for next slot to be free
-    // ensure to roll over
-    int i = 0;
-    while (temp != curr)
-    {
-        if (hash[temp].key == 0)
-        {
-            return temp;
-        }
-        i++;
-        temp = (temp + i * i) % SIZE_HASH;
-    }
-    // no empty slot is found
-    return -1;
-}
-//-------------------------------------------------------
 int main(int argc, char *argv[])
 {
     FILE *fp;
@@ -98,7 +79,7 @@ int main(int argc, char *argv[])
         }
         // hash is not empty.
         // Perform linear probe to find empty slot
-        hash_val = quadratic_probe(hash_val);
+        hash_val = linear_probe(hash_val);
         if (hash_val == -1)
         { // no empty slots
             printf("Hash full. Can't enter key %d\n", data.key);
