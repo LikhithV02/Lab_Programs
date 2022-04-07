@@ -1,113 +1,126 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define max 10
+#include <string.h>
 
-int q[10], front = 0, rear = -1;
+#define INSERT 1
+#define DELETE 2
+#define DISPLAY 3
+#define EXIT 0
+
+typedef struct
+{
+  int front;
+  int rear;
+  char *str;
+} queue_t;
+
+unsigned int menu()
+{
+  unsigned int ch;
+  ch = DISPLAY + 1;
+  while (ch > DISPLAY)
+  {
+    printf("\t%u - to Insert an element\n", INSERT);
+    printf("\t%u - to delete an element\n", DELETE);
+    printf("\t%u - to Display elements in queue\n", DISPLAY);
+    printf("\t%u - to Exit\n", EXIT);
+    printf("please enter your choice :");
+    scanf("%u", &ch);
+    if (ch > DISPLAY)
+      printf("invalid choice\n");
+  }
+  return ch;
+}
+
+queue_t *create(queue_t *qu, unsigned int size)
+{
+  qu = malloc(sizeof(queue_t));
+  qu->front = -1;
+  qu->rear = -1;
+  qu->str = calloc(size, sizeof(char));
+
+  return qu;
+}
+
+void enqueue(queue_t *q, unsigned int max)
+{
+  char elem;
+  printf("please enter the element to be inserted:");
+  scanf(" %c", &elem);
+
+  if ((q->front == -1) && (q->rear == -1))
+  {
+    q->str[++q->front] = elem;
+    q->rear++;
+  }
+  else if ((q->rear + 1) % max == q->front)
+    printf("queue overflow\n");
+  else
+  {
+    q->rear = (q->rear + 1) % max;
+    q->str[q->rear] = elem;
+  }
+}
+
+void dequeue(queue_t *q, unsigned int max)
+{
+  if ((q->front == -1) && (q->rear == -1))
+    printf("queue underflow\n");
+  else if (q->front == q->rear)
+  {
+    q->front = -1;
+    q->rear = -1;
+  }
+  else
+  {
+    q->str[q->front] = ' ';
+    q->front = (q->front + 1) % max;
+  }
+}
+
+void display(queue_t *q, unsigned int max)
+{
+  unsigned int temp = q->front;
+  if (q->front == -1)
+    printf("the queue is empty\n");
+  else
+  {
+    do
+    {
+      printf("\t%c\n", q->str[temp]);
+      temp = (temp + 1) % max;
+    } while (temp != q->front);
+  }
+}
 
 int main()
 {
-  int ch;
-  /*FUNCTION PROTOTYPE */
-  void insert();
-  void delet();
-  void display();
-  printf("\nCircular Queue operations\n");
-  printf("1.insert\n2.delete\n3.display\n4.exit\n");
+  unsigned int max, choice;
+  queue_t *q;
+
+  printf("please enter the size of queue to be created :");
+  scanf("%u", &max);
+
+  q = create(q, max);
+
   while (1)
   {
-    printf("Enter your choice:");
-    scanf("%d", &ch);
-    switch (ch)
+    choice = menu();
+    switch (choice)
     {
-    case 1:
-      insert();
+    case INSERT:
+      enqueue(q, max);
       break;
-    case 2:
-      delet();
+    case DELETE:
+      dequeue(q, max);
       break;
-    case 3:
-      display();
+    case DISPLAY:
+      display(q, max);
       break;
-    case 4:
-      exit(1);
-    default:
-      printf("Invalid option\n");
+    case EXIT:
+      free(q);
+      exit(0);
     }
   }
   return 0;
-}
-
-void insert()
-{
-  int x;
-  if ((front == 0 && rear == max - 1) || (front > 0 && rear == front - 1))
-    printf("Queue is overflow\n");
-  else
-  {
-    printf("Enter element to be insert:");
-    scanf("%d", &x);
-    if (rear == max - 1 && front > 0)
-    {
-      rear = 0;
-      q[rear] = x;
-    }
-    else
-    {
-      if ((front == 0 && rear == -1) || (rear != front - 1))
-        q[++rear] = x;
-    }
-  }
-}
-
-void delet()
-{
-  int a;
-  if ((front == 0) && (rear == -1))
-  {
-    printf("Queue is underflow\n");
-    exit(1);
-  }
-  if (front == rear)
-  {
-    a = q[front];
-    rear = -1;
-    front = 0;
-  }
-  else if (front == max - 1)
-  {
-    a = q[front];
-    front = 0;
-  }
-  else
-    a = q[front++];
-  printf("Deleted element is:%d\n", a);
-}
-
-void display()
-{
-  int i, j;
-  if (front == 0 && rear == -1)
-  {
-    printf("Queue is underflow\n");
-    exit(1);
-  }
-  if (front > rear)
-  {
-    for (i = 0; i <= rear; i++)
-      printf("\t%d", q[i]);
-    for (j = front; j <= max - 1; j++)
-      printf("\t%d", q[j]);
-    printf("\nrear is at %d\n", q[rear]);
-    printf("\nfront is at %d\n", q[front]);
-  }
-  else
-  {
-    for (i = front; i <= rear; i++)
-    {
-      printf("\t%d", q[i]);
-    }
-    printf("\nrear is at %d\n", q[rear]);
-    printf("\nfront is at %d\n", q[front]);
-  }
-  printf("\n");
 }
