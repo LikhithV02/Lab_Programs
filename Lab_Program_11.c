@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +10,7 @@
 // input to the program is as below
 // line 1: <n> <0|1> <start
 // where  n is number of vertices, 0-undirected, 1-directed
-// and <start> is the vertex to start traversal from
+// and <start> is the vertex to start traversal froma
 // line 2 to n+1: <city number>: list of cities SPACE Separated
 /* example input
 4 0 1
@@ -79,8 +78,9 @@ void initgraph(unsigned int n, unsigned int adjm[n + 1][n + 1], unsigned int dir
   unsigned int node; // graph node
   unsigned int nbr;  // adjacency list
   // for each vertex, gets its connected nodes
-  while (fgets(buf, BUF_SIZE, stdin))
+  for (int i = 0; i < n; i++)
   {
+    fgets(buf, BUF_SIZE, stdin);
     token = strtok(buf, ": \n");
     if (token == NULL)
     {
@@ -117,7 +117,7 @@ int main()
   unsigned int dir;   // type of graph undirected or directed
   unsigned int start; // the start vertex for traversal
 
-  scanf("%d %d %d\n", &n, &dir, &start);
+  scanf("%d %d %d", &n, &dir, &start);
 
   if (start > n)
   {
