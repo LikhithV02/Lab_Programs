@@ -1,131 +1,57 @@
-#include <stdio.h>
+#include<stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
-/**
- * This is a program to search a pattern in the main
- * string using KMP algorithm and replacing the pattern
- * with a replace string in the main string
- **/
-
-int stringlength(int n, char *string);
-int *lps(char *pattern, int m);
-void kmp_replace(char *string, char *pattern, char *replace);
-
-/**
- * Function to find length of string.
- **/
-
-int stringlength(int n, char *string)
-{
-    if (string[n] == '\0')
-    {
-        return n;
+bool ispat(char src[], char pat[], size_t len) {
+  bool res = true;
+  for (size_t i=0; i<len; i++) {
+    if (src[i] != pat[i]) {
+      res = false;
+      break;
     }
-    return stringlength(n + 1, string);
+  }
+  return res;
 }
 
-/**
- * Function to find LPS array and return it calling function
- **/
-
-int *lps(char *pattern, int m)
-{
-    int *lps = (int *)calloc(m, sizeof(int));
-    int len = 0;
-    int i = 1;
-    for (i = 0; i < m; i++)
-    {
-        *(lps + i) = 0;
-    }
-    while (i < m)
-    {
-        if (pattern[i] == pattern[len])
-        {
-            *(lps + i) = len + 1;
-            len++;
-            i++;
-        }
-        else if (len != 0)
-        {
-            len = *(lps + len - 1);
-        }
-        else
-        {
-            *(lps + i) = 0;
-            i++;
-        }
-    }
-    return lps;
-    free(lps);
+void copyrepl(char *dst, char *rep, size_t len) {
+  for (size_t i=0; i<len; i++) {
+    dst[i] = rep[i];
+  }
 }
-
-/**
- * Function to find pattern in a string using KMP algorithm
- * and replace it with a replace string if it is present in the string
- **/
-
-void kmp_replace(char *string, char *pattern, char *replace)
-{
-    int N = stringlength(0, string);
-    int M = stringlength(0, pattern);
-    int K = stringlength(0, replace);
-    if (M != K)
-    {
-        printf("Length of pattern string and replacement string is not equal."); // Length of pattern string and replace string should be equal
-        exit(0);
+char* patreplace(char* src, char* pat, char* rep) {
+  /* check if pattern exist in the string */
+  size_t srclen = strlen(src);
+  size_t patlen = strlen(pat);
+  size_t replen = strlen(rep);
+  char *res = calloc(srclen * replen +1, sizeof(char));
+  size_t ai=0; //index into answer buffer.
+  
+  for (size_t si=0; si<srclen-patlen+1;) {
+    /* check if pattern exists in the source*/
+    if (ispat(&src[si], pat, patlen)){
+      // pattern is found. replace the pattern
+      copyrepl(&res[ai], rep, replen);
+      ai += replen;
+      si += patlen;
+    } else {
+      res[ai++] = src[si++];
     }
-    int i = 0;
-    int j = 0;
-    int k = 0;
-    int m = 0;
-    int *LPS = NULL;
-    LPS = lps(pattern, M);
-    while (i < N)
-    {
-        if (string[i] == pattern[j])
-        {
-            i++;
-            j++;
-        }
-        else
-        {
-            if (j != 0)
-            {
-                j = LPS[j - 1];
-            }
-            else
-            {
-                if (j == 0 && i == N - 1)
-                {
-                    printf("Pattern not found");
-                }
-                i++;
-            }
-        }
-        if (j == M)
-        {
-            printf("Pattern found at position %d in string\n", (i - j) + 1);
-            m = i - j;
-            j = LPS[j - 1];
-            for (k = 0; replace[k] != '\0'; k++)
-            {
-                string[m] = replace[k];
-                m++;
-            }
-            printf("New string : %s\n", string);
-        }
-    }
-}
+  }
+  return res;
+} 
 
-/**
- * Main function takes in the strings from command line arguments
- **/
 
-int main(int argc, char *argv[argc + 1])
-{
-    char *STR = argv[1]; // Main string
-    char *PAT = argv[2]; // Pattern string
-    char *REP = argv[3]; // Replace string
-    kmp_replace(STR, PAT, REP);
-    return 0;
+int main(int argc, char* argv[argc+1]) {
+  if (argc < 4) {
+    printf("Usage: %s <text> <pattern> <replacetest>", argv[0]);
+    exit(1);
+  }
+  char *src = argv[1];
+  char *pat = argv[2];
+  char *rep = argv[3];
+  char *ans = NULL;
+
+  char* result = patreplace(src,pat,rep);
+  printf("Replace String: %s\n", result);
 }
