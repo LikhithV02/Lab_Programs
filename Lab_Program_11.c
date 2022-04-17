@@ -81,7 +81,7 @@ void initgraph(unsigned int n, unsigned int adjm[n + 1][n + 1], unsigned int dir
   for (int i = 0; i <= n; i++)
   {
     fgets(buf, BUF_SIZE, stdin);
-    token = strtok(buf, ": \n");
+    token = strtok(buf, "; \n");
     if (token == NULL)
     {
       continue; // node not present
