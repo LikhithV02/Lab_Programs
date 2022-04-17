@@ -55,7 +55,7 @@ int main(int argc, char *argv[argc + 1])
 {
     if (argc < 4)
     {
-        printf("Usage: %s <text> <pattern> <replacetest>", argv[0]);
+        printf("Usage: %s <text> <pattern> <replacetext>", argv[0]);
         exit(1);
     }
     char *src = argv[1];
