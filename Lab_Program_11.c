@@ -78,7 +78,7 @@ void initgraph(unsigned int n, unsigned int adjm[n + 1][n + 1], unsigned int dir
   unsigned int node; // graph node
   unsigned int nbr;  // adjacency list
   // for each vertex, gets its connected nodes
-  for (int i = 0; i < n; i++)
+  for (int i = 0; i <= n; i++)
   {
     fgets(buf, BUF_SIZE, stdin);
     token = strtok(buf, ": \n");
@@ -145,8 +145,8 @@ int main()
   {
     if (visited[i] == 0)
     {
-      printf("\nBFS traversal started from %zu\n", i);
-      bfs(n, adjm, visited, i);
+      printf("\nBFS traversal started from %zu\n", start);
+      bfs(n, adjm, visited,start);
     }
   }
   printf("\n");
@@ -154,12 +154,12 @@ int main()
   {
     visited[i] = 0; // 1 means visited
   }
-  for (size_t i = 1; i <= n; i++)
+  for (size_t i = 1; i <=n; i++)
   {
     if (visited[i] == 0)
     {
-      printf("\nDFS traversal started from %zu\n", i);
-      dfs(n, adjm, visited, i);
+      printf("\nDFS traversal started from %zu\n", start);
+      dfs(n, adjm, visited, start);
     }
   }
   printf("\n");
