@@ -146,7 +146,7 @@ int main()
     if (visited[i] == 0)
     {
       printf("\nBFS traversal started from %zu\n", start);
-      bfs(n, adjm, visited,start);
+      bfs(n, adjm, visited, start);
     }
   }
   printf("\n");
@@ -154,7 +154,7 @@ int main()
   {
     visited[i] = 0; // 1 means visited
   }
-  for (size_t i = 1; i <=n; i++)
+  for (size_t i = 1; i <= n; i++)
   {
     if (visited[i] == 0)
     {
